@@ -11,9 +11,10 @@ red = (255, 0, 0)
 blue = (0, 0, 255)
 
 img = "venv\src\square.png"
-image = pygame.image.load(img).
+image = pygame.image.load(img)
 
 bg = (127, 127, 127)
+
 
 x = 0
 y = screen.get_height() // 2
