@@ -8,10 +8,13 @@ height = 480
 
 surface = pygame.display.set_mode((width, height))
 done = False
+
+#colors
 color = namedtuple("color",("x","y","z"))
 red = color(255, 0, 0)
 blue = color(0, 0, 255)
 black = color(0,0,0)
+
 
 bg_color = namedtuple("background_color",("x","y","z"))
 bg = bg_color(127, 127, 127)
