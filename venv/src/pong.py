@@ -63,22 +63,29 @@ pad1.scale_image(0.5)
 pad2.scale_image(0.5)
 ball.scale_image(0.5)
 
+
+
 # Main game loop
 done = False
+z= False
+s= False
+up = False
+down = False
+
 while not done:
+    # Inside the main game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
-            done = True
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_z:
-            pad1.position["y"] -= 3
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-            pad1.position["y"] += 3
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-            pad2.position["y"] -= 3
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-            pad2.position["y"] += 3
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                done = False
+
+
+            
+
+
 
     # Game logic
     screen.fill(dark_blue)
@@ -87,6 +94,23 @@ while not done:
     pad1.load(Paddle.image,screen)
     pad2.load(Paddle.image,screen)
     ball.load(Ball.image,screen)
+    
+    #move pallets
+    keys = pygame.key.get_pressed()
+
+    # Player 2 controls
+    if keys[pygame.K_UP]:
+        pad2.position["y"] -= 3
+    elif keys[pygame.K_DOWN]:
+        pad2.position["y"] += 3
+
+    # Player 1 controls
+    if keys[pygame.K_z]:
+        pad1.position["y"] -= 3
+    elif keys[pygame.K_s]:
+        pad1.position["y"] += 3
+
+    
 
     # Move the ball
     ball.position["x"] += ball.max_speed
@@ -94,6 +118,9 @@ while not done:
     # Check for ball collisions with walls
     if ball.position["x"] >= screen.get_width() - ball.image.get_width()  or ball.position["x"] <= 0:
         ball.max_speed = -ball.max_speed
+    if ball.position["y"] >= screen.get_height() - ball.image.get_width() or ball.position["y"] <= 0:
+        ball.max_speed = -ball.max_speed
+        
 
     pygame.display.flip()
     pygame.time.Clock().tick(60)
