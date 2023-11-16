@@ -13,6 +13,10 @@ class Unit:
         new_width = int(image.get_width() * scale_factor)
         new_height = int(image.get_height() * scale_factor)
         return pygame.transform.scale(image, (new_width, new_height))
+    
+class collision:
+    def collide_with(obj1  : pygame.rect,obj2: pygame.rect):
+        pass
 
 
 class Paddle(Unit):
