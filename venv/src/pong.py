@@ -1,5 +1,6 @@
 import pygame
 from collections import namedtuple
+from random import randint
 
 class Unit:
     
@@ -37,7 +38,7 @@ class Ball(Unit):
     image = pygame.image.load(img)
     width = image.get_width()
     height = image.get_height()
-    max_speed = 4
+    max_speed = 3
 
     def __init__(self, position, dir_vect):
         super().__init__(position, dir_vect)
@@ -119,10 +120,15 @@ screen = pygame.display.set_mode((bounds.width, bounds.height))
 Color = namedtuple("Color", ("x", "y", "z"))
 dark_blue = (0, 0, 145)
 
+# create random generator
+dir_vec_x = randint(-1,1)* Ball.max_speed
+dir_vec_y = randint(-1,1)* Ball.max_speed
+print(f"x: {dir_vec_x} y : {dir_vec_y}")
+
 # Create paddles and ball
 L_pad = Paddle([0, bounds.height / 2], [0, 0])
 R_pad = Paddle([bounds.width - Paddle.image.get_width(), bounds.height / 2], [0, 0])
-ball = Ball([bounds.width / 2, bounds.height / 2], [2, 2])
+ball = Ball([bounds.width / 2, bounds.height / 2], [dir_vec_x, dir_vec_y])
 
 # Scale images
 L_pad.scale_image(0.5)
