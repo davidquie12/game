@@ -26,10 +26,6 @@ class Paddle(Unit):
     def __init__(self, position, dir_vect):
         super().__init__(position, dir_vect)
 
-
-    
-
-    
     def scale_image(self, scale_factor):
         return super().scale_image(self.image, scale_factor)
 
@@ -94,7 +90,7 @@ class Collision:
             ball.dir_vect["y"] *= -1
 
         if ball.position["x"] <= field.left or ball.position["x"] + ball.image.get_width() >= field.right:
-            pass
+            pygame.quit()
         #score
 
         # paddles works
@@ -110,9 +106,6 @@ class Collision:
         if R_pad.position["y"] + R_pad.image.get_height() >= field.bottom:
             R_pad.position["y"] = field.bottom - R_pad.image.get_height()
         
-
-
-
 
 
 # Initialize Pygame
@@ -136,11 +129,8 @@ L_pad.scale_image(0.5)
 R_pad.scale_image(0.5)
 ball.scale_image(0.5)
 
-
-
 # Main game loop
 done = False
-
 
 while not done:
     # Inside the main game loop
