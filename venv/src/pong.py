@@ -109,7 +109,7 @@ class Collision:
         
         if ball.center.x - ball.radius <= 0 or \
             ball.center.x + ball.radius >= screen.get_width():
-                ball.dir_vec.x *= -1
+                pygame.quit()
                 
         if ball.center.y - ball.radius <= 0 or \
             ball.center.y + ball.radius >= screen.get_height():
