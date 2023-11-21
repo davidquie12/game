@@ -1,0 +1,36 @@
+class Collision:
+    @staticmethod
+    def collide_with(L_pad: Paddle, R_pad: Paddle, ball: Ball):
+        field = Boundary()
+        
+        # Ball and Paddle Collision with left paddle
+        if (
+            ball.position["x"] <= L_pad.position["x"] + L_pad.image.get_width()
+            and ball.position["y"] >= L_pad.position["y"]
+            and ball.position["y"] + ball.image.get_height() <= L_pad.position["y"] + L_pad.image.get_height()
+        ):
+            ball.dir_vect["x"] *= -1
+            hit_pos = (ball.position["y"] + ball.image.get_height() / 2) - L_pad.position["y"]
+            paddle_center = L_pad.image.get_height() / 2
+            normalized_hit_pos = (hit_pos - paddle_center) / paddle_center
+            ball.dir_vect["y"] = normalized_hit_pos
+
+        # Ball and Paddle Collision with right paddle
+        if (
+            ball.position["x"] + ball.image.get_width() >= R_pad.position["x"]
+            and ball.position["y"] >= R_pad.position["y"]
+            and ball.position["y"] + ball.image.get_height() <= R_pad.position["y"] + R_pad.image.get_height()
+            ):
+            ball.dir_vect["x"] *= -1
+            hit_pos = (ball.position["y"] + ball.height / 2) - R_pad.position["y"]
+            paddle_center = R_pad.height / 2
+            normalized_hit_pos = (hit_pos - paddle_center) / paddle_center
+            ball.dir_vect["y"] = normalized_hit_pos
+
+        # Ball and Boundary Collision works
+        if ball.position["y"] <= field.top or ball.position["y"] + ball.image.get_height() >= field.bottom:
+            ball.dir_vect["y"] *= -1
+
+        if ball.position["x"] <= field.left or ball.position["x"] + ball.image.get_width() >= field.right:
+            pygame.quit()
+        #score
