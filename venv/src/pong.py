@@ -126,7 +126,7 @@ class two_Play:
     def __init__(self, screen : pygame.Surface):
         self.screen = screen
         self.game_over = False
-        self.smash : bool
+        self.smash = False
         # Set up colors
         self.dark_blue = (0, 0, 145)
         self.white = (255, 255, 255)
@@ -206,7 +206,7 @@ class two_Play:
         
 class four_Play:
     def __init__(self, screen : pygame.Surface):
-        self.smash : bool
+        self.smash = False
         self.screen = screen
         self.game_over = False
         # Set up colors
@@ -253,11 +253,11 @@ class four_Play:
         # Update game logic
         self.game_over = Collision.collide_with_boundary(self.ball)
         
-        self.smash = self.ball.check_collision_with_left_paddle(self.L1_pad,self.smash )
-        self.smash = self.ball.check_collision_with_left_paddle(self.L2_pad,self.smash )
+        self.ball.check_collision_with_left_paddle(self.L1_pad,self.smash )
+        self.ball.check_collision_with_left_paddle(self.L2_pad,self.smash )
         
-        self.smash = self.ball.check_collision_with_right_paddle(self.R1_pad,self.smash )
-        self.smash = self.ball.check_collision_with_right_paddle(self.R2_pad,self.smash )
+        self.ball.check_collision_with_right_paddle(self.R1_pad,self.smash )
+        self.ball.check_collision_with_right_paddle(self.R2_pad,self.smash )
         
         keys = pygame.key.get_pressed()
 
