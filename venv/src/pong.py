@@ -60,12 +60,15 @@ class Ball(Unit):
         self.center = center
         self.radius = radius
 
-    def check_collision_with_left_paddle(self, L_pad: Paddle):
+    def check_collision_with_left_paddle(self, L_pad: Paddle,smash):
         if (
             self.dir_vec.x < 0  # Check if the ball is moving left
             and L_pad.rect.colliderect(pygame.Rect(self.center.x - self.radius, self.center.y - self.radius, self.radius * 2, self.radius * 2))  # Check for collision
         ):
-            self.dir_vec.x *= -1  
+            if not smash:
+                self.dir_vec.x *= -1  
+            else:
+                self.dir_vec.x *= (-1 * 5)
 
             # Check for top/bottom collision
             if self.center.y - self.radius <= L_pad.rect.top or self.center.y + self.radius >= L_pad.rect.bottom:
@@ -74,14 +77,18 @@ class Ball(Unit):
                     self.speed = 10
                 else:
                     self.speed = 4
+        
 
         
-    def check_collision_with_right_paddle(self, R_pad: Paddle):
+    def check_collision_with_right_paddle(self, R_pad: Paddle, smash):
         if (
             self.dir_vec.x > 0  # Check if the ball is moving right
             and R_pad.rect.colliderect(pygame.Rect(self.center.x - self.radius, self.center.y - self.radius, self.radius * 2, self.radius * 2))  # Check for collision
         ):
-            self.dir_vec.x *= -1  
+            if not smash:
+                self.dir_vec.x *= -1  
+            else:
+                self.dir_vec.x *= (-1 * 5)
 
             # Check for top/bottom collision
             if self.center.y - self.radius <= R_pad.rect.top or self.center.y + self.radius >= R_pad.rect.bottom:
@@ -112,11 +119,14 @@ class Collision:
             ball.center.y + ball.radius >= window.y:
                 ball.dir_vec.y *= -1
                 
+        
                 
-class Play:
+                
+class two_Play:
     def __init__(self, screen : pygame.Surface):
         self.screen = screen
         self.game_over = False
+        self.smash : bool
         # Set up colors
         self.dark_blue = (0, 0, 145)
         self.white = (255, 255, 255)
@@ -145,8 +155,19 @@ class Play:
         self.units = [self.L_pad, self.R_pad, self.ball]
 
     def update(self,screen):
+        self.smash = False
+        # Update game logic
+        self.game_over = Collision.collide_with_boundary(self.ball)
+        self.ball.check_collision_with_left_paddle(self.L_pad,self.smash)
+        self.ball.check_collision_with_right_paddle(self.R_pad,self.smash)
+        
         keys = pygame.key.get_pressed()
 
+        #smash ball
+        if keys[pygame.K_SPACE]:
+            self.smash = True
+        else:
+            self.smash = False
         # Player 2 controls
         if keys[pygame.K_UP]:
             self.R_pad.dir_vec.y -= 1
@@ -171,10 +192,7 @@ class Play:
 
         screen.fill(self.dark_blue)
 
-        # Update game logic
-        self.game_over = Collision.collide_with_boundary(self.ball)
-        self.ball.check_collision_with_left_paddle(self.L_pad)
-        self.ball.check_collision_with_right_paddle(self.R_pad)
+
 
         # Draw the game elements
         for unit in self.units:
@@ -186,6 +204,124 @@ class Play:
             return True
 
         
+class four_Play:
+    def __init__(self, screen : pygame.Surface):
+        self.smash : bool
+        self.screen = screen
+        self.game_over = False
+        # Set up colors
+        self.dark_blue = (0, 0, 145)
+        self.white = (255, 255, 255)
+
+        # Create random generator
+        self.random_angle = uniform(0, 2 * math.pi)
+        self.dir_x = math.cos(self.random_angle)
+        self.dir_y = math.sin(self.random_angle)
+
+        # Random start pos
+        self.center = pygame.Vector2(randint(30, 600), randint(30, 600))
+
+        self.L1_pad_pos = pygame.Vector2(0, self.screen.get_height() / 4)
+        self.L2_pad_pos = pygame.Vector2(0, self.screen.get_height() / 0.5)
+        
+        self.dir_vec_L1 = pygame.Vector2(0, 0)
+        self.dir_vec_L2 = pygame.Vector2(0, 0)
+        
+
+        self.R1_pad_pos = pygame.Vector2(self.screen.get_width() - 30, self.screen.get_height() / 4)
+        self.R2_pad_pos = pygame.Vector2(self.screen.get_width() - 30, self.screen.get_height() / 0.5)
+        
+        self.dir_vec_R1 = pygame.Vector2(0, 0)
+        self.dir_vec_R2 = pygame.Vector2(0, 0)
+        
+
+        self.ball_dir = pygame.Vector2(self.dir_x, self.dir_y)
+
+        # Create paddles and ball
+        self.L1_pad = Paddle(self.L1_pad_pos, self.dir_vec_L1, self.white, 3)
+        self.L2_pad = Paddle(self.L2_pad_pos, self.dir_vec_L2, self.white, 3)
+        
+        self.R1_pad = Paddle(self.R1_pad_pos, self.dir_vec_R1, self.white, 3)
+        self.R2_pad = Paddle(self.R2_pad_pos, self.dir_vec_R2, self.white, 3)
+        
+        self.ball = Ball(self.center, 10, self.ball_dir, self.white)
+
+        self.units = [self.L1_pad,self.L2_pad, self.R1_pad,self.R2_pad, self.ball]
+
+    def update(self,screen):
+        
+        # Update game logic
+        self.game_over = Collision.collide_with_boundary(self.ball)
+        
+        self.smash = self.ball.check_collision_with_left_paddle(self.L1_pad,self.smash )
+        self.smash = self.ball.check_collision_with_left_paddle(self.L2_pad,self.smash )
+        
+        self.smash = self.ball.check_collision_with_right_paddle(self.R1_pad,self.smash )
+        self.smash = self.ball.check_collision_with_right_paddle(self.R2_pad,self.smash )
+        
+        keys = pygame.key.get_pressed()
+
+        #smash ball
+        if keys[pygame.K_SPACE]:
+            self.smash = True
+        else:
+            self.smash = False
+            
+        # Player 2A controls
+        if keys[pygame.K_UP]:
+            self.R1_pad.dir_vec.y -= 1
+            self.R1_pad.is_moving = True
+        elif keys[pygame.K_DOWN]:
+            self.R1_pad.dir_vec.y += 1
+            self.R1_pad.is_moving = True
+        else:
+            self.R1_pad.dir_vec.y = 0
+            self.R1_pad.is_moving = False
+            
+        # Player 2B controls
+        if keys[pygame.K_o]:
+            self.R2_pad.dir_vec.y -= 1
+            self.R2_pad.is_moving = True
+        elif keys[pygame.K_l]:
+            self.R2_pad.dir_vec.y += 1
+            self.R2_pad.is_moving = True
+        else:
+            self.R2_pad.dir_vec.y = 0
+            self.R2_pad.is_moving = False
+
+        # Player 1A controls
+        if keys[pygame.K_z]:
+            self.L1_pad.dir_vec.y -= 1
+            self.L1_pad.is_moving = True
+        elif keys[pygame.K_s]:
+            self.L1_pad.dir_vec.y += 1
+            self.L1_pad.is_moving = True
+        else:
+            self.L1_pad.dir_vec.y = 0
+            self.L1_pad.is_moving = False
+            
+            # Player 1B controls
+        if keys[pygame.K_r]:
+            self.L2_pad.dir_vec.y -= 1
+            self.L2_pad.is_moving = True
+        elif keys[pygame.K_f]:
+            self.L2_pad.dir_vec.y += 1
+            self.L2_pad.is_moving = True
+        else:
+            self.L2_pad.dir_vec.y = 0
+            self.L2_pad.is_moving = False
+
+        screen.fill(self.dark_blue)
+        
+
+        # Draw the game elements
+        for unit in self.units:
+            unit.update()
+            unit.draw(self.screen)
+            
+    def process_event(self):
+        if self.game_over:
+            return True
         
 
 
@@ -197,11 +333,14 @@ class State:
         pass
 
 class PlayingState(State):
-    def __init__(self,screen):
+    def __init__(self,screen, players : int):
         self.should_exit = False
         self.next_state = None
-        self.game =  Play(screen)
-        
+        if players == 2:
+            self.game =  two_Play(screen)
+        elif players == 4:
+            self.game = four_Play(screen)        
+            
     def process_event(self, event):
         if self.game.process_event():
             self.next_state = GameOverState()
@@ -244,14 +383,22 @@ class MainMenuState(State):
         self.next_state = None
         self.screen = screen
         # Maak knoppen voor het hoofdmenu
-        self.start_button = TextButton(window=screen,loc=(200,200), text='Start game' ,fontSize=50,textColor=(125,125,125))
-        self.exit_button = TextButton(window=screen,loc=(200,400), text='Exit game', fontSize=50, textColor=(125,125,125))
+        self.two_player = TextButton(window=screen,loc=(200,250), text='two_player' ,fontSize=50,textColor=(125,125,125))
+        self.four_player = TextButton(window=screen,loc=(200,300), text='four_game ' ,fontSize=50,textColor=(125,125,125))
+        self.exit_button = TextButton(window=screen,loc=(200,350), text='Exit game ', fontSize=50, textColor=(125,125,125))
 
     def process_event(self, event):
         # Verwerk gebeurtenissen voor het hoofdmenu
-        if self.start_button.handleEvent(event):
+
+            
+        if self.two_player.handleEvent(event):
             # Logica om het spel te starten
-            self.next_state = PlayingState(self.screen)
+            self.next_state = PlayingState(self.screen,2)
+            
+        if self.four_player.handleEvent(event):
+            # Logica om het spel te starten
+            self.next_state = PlayingState(self.screen,4)
+            
         elif self.exit_button.handleEvent(event):
             self.should_exit = True
 
@@ -259,7 +406,8 @@ class MainMenuState(State):
         # Update logica voor het hoofdmenu
         screen.fill((0, 0, 0))  # Fill the screen with black
         # Draw the buttons onto the screen
-        self.start_button.draw()
+        self.two_player.draw()
+        self.four_player.draw()
         self.exit_button.draw()
 
     # Voeg andere functionaliteiten toe die nodig zijn voor het hoofdmenu
